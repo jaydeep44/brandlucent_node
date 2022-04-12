@@ -1,8 +1,8 @@
 const User = require("../models/userModel");
-const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
-
+const bcrypt = require("bcrypt");
+const _ = require("lodash");
 const jwt = require("jsonwebtoken");
 
 exports.login = (req, res, next) => {
@@ -26,14 +26,13 @@ exports.login = (req, res, next) => {
               email: user[0].email,
               _id: user[0]._id,
             },
-            "thisisdummytext",
+            process.env.LOGINKEY,
             {
               expiresIn: "24h",
             }
           );
           res.status(200).json({
-            firstName: user[0].firstName,
-            lastName: user[0].lastName,
+            name: user[0].name,
             role: user[0].role,
             email: user[0].email,
             status: user[0].status,
@@ -79,11 +78,40 @@ exports.sendMailToResetPassword = (req, res) => {
           subject: "password reset",
           html: `
                     <p>You requested for password reset</p>
-                    <h5>click in this <a href="http://192.168.168.28/react-projects/project2/set%20pass.jpg"/reset/${token}">link</a> to reset password</h5>
+                    <h5>click in this <a href="http://192.168.168.28/react-projects/project2/set%20pass.jpg">link</a> to reset password</h5>
                     `,
         });
-        res.json({ message: "check your email" });
+        res.json({ message: "check your email", token });
       });
     });
   });
+};
+
+exports.restPassword = (req, res) => {
+  const { token, newPassword, confirmPassword } = req.body;
+  const salt = bcrypt.genSaltSync(10);
+
+  const hash = bcrypt.hashSync(newPassword, salt);
+  const obj = {
+    password: hash,
+  };
+  if (newPassword === confirmPassword) {
+    User.findOne({ resetToken: token })
+      .then((user) => {
+        user = _.extend(user, obj);
+        user.save();
+        return res.status(200).json({
+          message: "Password Updated successfully",
+        });
+      })
+      .catch((err) => {
+        return res.status(400).json({
+          message: "Token is not match or expired",
+        });
+      });
+  } else {
+    return res.status(400).json({
+      message: "confirm password is not match",
+    });
+  }
 };

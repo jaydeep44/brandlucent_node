@@ -26,131 +26,125 @@ exports.CreateUser = (req, res) => {
 };
 
 //update the user ( by user itself)
-exports.updateUser = (req,res)=>{
+exports.updateUser = (req, res) => {
   const body = req.body;
-  const updateUserData =  {
+  const updateUserData = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
     phone: req.body.phone,
-  }
+  };
   if (Object.keys(body).length === 0 && body.constructor === Object) {
     res.status(400).send({ message: "Data Not Proper Formated..." });
   }
 
-  if(!ObjectId.isValid(body._id) && !ObjectId(body._id)){
-    res.status(400).send({message:"user id not valid"})
-  }else{
-    User.findOne({_id:body._id}).then(userFound =>{
-     if(!userFound){
-        res.status(200).send({
-          message:"user not found",
-          subError:"user id is not there in records"
-        })
-      }else{
-        try{
-          User.findByIdAndUpdate({ _id: body._id },updateUserData , {new: true} ,(error,updatedUser)=>{
-           if(error){
-              res.status(404).json({
-              message: "user not updated",
-              subError : error
+  if (!ObjectId.isValid(body._id) && !ObjectId(body._id)) {
+    res.status(400).send({ message: "user id not valid" });
+  } else {
+    User.findOne({ _id: body._id })
+      .then((userFound) => {
+        if (!userFound) {
+          res.status(200).send({
+            message: "user not found",
+            subError: "user id is not there in records",
+          });
+        } else {
+          try {
+            User.findByIdAndUpdate(
+              { _id: body._id },
+              updateUserData,
+              { new: true },
+              (error, updatedUser) => {
+                if (error) {
+                  res.status(404).json({
+                    message: "user not updated",
+                    subError: error,
+                  });
+                } else {
+                  res.status(200).json({
+                    message: "User Updated successfully",
+                    userInfo: updatedUser,
+                  });
+                }
+              }
+            );
+          } catch (error) {
+            res.status.send({
+              message: "Opps ! something wrong",
+              SubError: error,
             });
-           }else{
-            res.status(200).json({
-              message: "User Updated successfully",
-              userInfo : updatedUser
-            });
-           }
-       
-          })
-        
-        }catch(error){
-          res.status.send({
-            message:"Opps ! something wrong",
-            SubError:error
-          })
+          }
         }
-      }
-    }).catch(error=>{
-      res.status(400).send({
-        message:"Oop ! something went wrong in user update",
-        subError : error.message
       })
-    })
+      .catch((error) => {
+        res.status(400).send({
+          message: "Oop ! something went wrong in user update",
+          subError: error.message,
+        });
+      });
   }
- };
+};
 
 //  Get the List of Users
-exports.getAllUser = (req,res) =>{
-  User.find().select("-password").then(listOfuser =>{
-       res.status(200).send({
-         message:"users Data",
-         users:listOfuser
-       })
-  }).catch(error =>{
-     res.status(400).send({
-        message:"Opps ! something wrong",
-        subError:error
-     });
-  })
+exports.getAllUser = (req, res) => {
+  User.find()
+    .select("-password")
+    .then((listOfuser) => {
+      res.status(200).send({
+        message: "users Data",
+        users: listOfuser,
+      });
+    })
+    .catch((error) => {
+      res.status(400).send({
+        message: "Opps ! something wrong",
+        subError: error,
+      });
+    });
 };
 
 // delete the Users
-exports.deleteUser = (req,res) =>{
-  const userId = req.query.userid
-  if(!ObjectId.isValid(userId) && !ObjectId(userId)){
-    res.status(400).send({message:"user id not valid"})
-  }else{
-
-    User.findOne({_id:userId}).then(userFound =>{
-      console.log(userFound)
-      if(!userFound){
-         res.status(200).send({
-           message:"user not found",
-           subError:"user id is not there in records"
-         })
-       }else{
-        try{
-          User.findByIdAndDelete(userId,(error,deleteddUser)=>{
-           if(error){
-              res.status(404).json({
-              message: "user not deleted",
-              subError : error
+exports.deleteUser = (req, res) => {
+  const userId = req.query.userid;
+  if (!ObjectId.isValid(userId) && !ObjectId(userId)) {
+    res.status(400).send({ message: "user id not valid" });
+  } else {
+    User.findOne({ _id: userId })
+      .then((userFound) => {
+        console.log(userFound);
+        if (!userFound) {
+          res.status(200).send({
+            message: "user not found",
+            subError: "user id is not there in records",
+          });
+        } else {
+          try {
+            User.findByIdAndDelete(userId, (error, deleteddUser) => {
+              if (error) {
+                res.status(404).json({
+                  message: "user not deleted",
+                  subError: error,
+                });
+              } else {
+                res.status(200).json({
+                  message: "User deleted successfully",
+                  userInfo: deleteddUser,
+                });
+              }
             });
-           }else{
-            res.status(200).json({
-              message: "User deleted successfully",
-              userInfo : deleteddUser
+          } catch (error) {
+            res.status.send({
+              message: "user not found",
+              SubError: error,
             });
-           }
-       
-          })
-        
-        }catch(error){
-          res.status.send({
-            message:"user not found",
-            SubError:error
-          })
+          }
         }
-       }
-     }).catch(error=>{
-       res.status(400).send({
-         message:"Oop ! something went wrong in user delete",
-         subError : error.message
-       })
-     })
-
-
-
-
-
-
-
-
-
-
-
-
+      })
+      .catch((error) => {
+        res.status(400).send({
+          message: "Oop ! something went wrong in user delete",
+          subError: error.message,
+        });
+      });
   }
-
 };
