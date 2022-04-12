@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
               expiresIn: "1h",
             }
           );
-       
+
           res.status(200).json({
             name: user[0].name,
             role: user[0].role,

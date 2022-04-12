@@ -150,34 +150,36 @@ exports.deleteUser = (req, res) => {
 };
 
 // get porfile
-exports.getUserById =(req,res)=>{
-  try{
-    const userId = req.query.userid
-    if(!ObjectId.isValid(userId) && !ObjectId(userId)){
-      res.status(400).send({message:"user id not valid"})
+exports.getUserById = (req, res) => {
+  try {
+    const userId = req.query.userid;
+    if (!ObjectId.isValid(userId) && !ObjectId(userId)) {
+      res.status(400).send({ message: "user id not valid" });
     }
-    User.findById(userId).select("-password").then(user =>{
-      if(!user){
+    User.findById(userId)
+      .select("-password")
+      .then((user) => {
+        if (!user) {
+          res.status(400).send({
+            message: "user not found !",
+          });
+        } else {
+          res.status(200).send({
+            message: "users Data",
+            user: user,
+          });
+        }
+      })
+      .catch((error) => {
         res.status(400).send({
-          message:"user not found !"
-        })
-      }else{
-        res.status(200).send({
-          message:"users Data",
-          user:user
-        })
-      }
-     
- }).catch(error =>{
+          message: "Opps ! something wrong",
+          subError: error,
+        });
+      });
+  } catch (error) {
     res.status(400).send({
-       message:"Opps ! something wrong",
-       subError:error
+      message: "Oops ! something went wrong in get the users",
+      subError: error.message,
     });
- })
-  }catch(error){
-    res.status(400).send({
-      message:"Oops ! something went wrong in get the users",
-      subError:error.message
-    })
   }
-}
+};
