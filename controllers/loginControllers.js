@@ -28,9 +28,10 @@ exports.login = (req, res, next) => {
             },
             "thisisdummytext",
             {
-              expiresIn: "24h",
+              expiresIn: "1h",
             }
           );
+       
           res.status(200).json({
             firstName: user[0].firstName,
             lastName: user[0].lastName,

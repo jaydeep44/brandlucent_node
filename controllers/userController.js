@@ -82,17 +82,25 @@ exports.updateUser = (req,res)=>{
 
 //  Get the List of Users
 exports.getAllUser = (req,res) =>{
-  User.find().select("-password").then(listOfuser =>{
-       res.status(200).send({
-         message:"users Data",
-         users:listOfuser
-       })
-  }).catch(error =>{
-     res.status(400).send({
-        message:"Opps ! something wrong",
-        subError:error
-     });
-  })
+  try{
+    User.find().select("-password").then(listOfuser =>{
+      res.status(200).send({
+        message:"users Data",
+        users:listOfuser
+      })
+ }).catch(error =>{
+    res.status(400).send({
+       message:"Opps ! something wrong",
+       subError:error
+    });
+ })
+  }catch(error){
+    res.status(400).send({
+      message:"Oops ! something went wrong in get all the users",
+      subError:error.message
+    })
+  }
+ 
 };
 
 // delete the Users
@@ -103,7 +111,6 @@ exports.deleteUser = (req,res) =>{
   }else{
 
     User.findOne({_id:userId}).then(userFound =>{
-      console.log(userFound)
       if(!userFound){
          res.status(200).send({
            message:"user not found",
@@ -154,3 +161,36 @@ exports.deleteUser = (req,res) =>{
   }
 
 };
+
+// get porfile
+exports.getUserById =(req,res)=>{
+  try{
+    const userId = req.query.userid
+    if(!ObjectId.isValid(userId) && !ObjectId(userId)){
+      res.status(400).send({message:"user id not valid"})
+    }
+    User.findById(userId).select("-password").then(user =>{
+      if(!user){
+        res.status(400).send({
+          message:"user not found !"
+        })
+      }else{
+        res.status(200).send({
+          message:"users Data",
+          user:user
+        })
+      }
+     
+ }).catch(error =>{
+    res.status(400).send({
+       message:"Opps ! something wrong",
+       subError:error
+    });
+ })
+  }catch(error){
+    res.status(400).send({
+      message:"Oops ! something went wrong in get the users",
+      subError:error.message
+    })
+  }
+}
