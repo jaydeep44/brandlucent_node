@@ -5,5 +5,5 @@ const Category = mongoose.Schema({
   image: { type: String, required: [true, "please enter image"] },
 });
 
-var Cat = mongoose.models.Category || mongoose.model("Category", Category);
+var Cat = mongoose.model("Category", Category);
 module.exports = Cat;

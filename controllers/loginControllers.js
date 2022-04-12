@@ -28,9 +28,10 @@ exports.login = (req, res, next) => {
             },
             process.env.LOGINKEY,
             {
-              expiresIn: "24h",
+              expiresIn: "1h",
             }
           );
+       
           res.status(200).json({
             name: user[0].name,
             role: user[0].role,

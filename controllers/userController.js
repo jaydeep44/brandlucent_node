@@ -86,6 +86,7 @@ exports.updateUser = (req, res) => {
 };
 
 //  Get the List of Users
+<<<<<<< HEAD
 exports.getAllUser = (req, res) => {
   User.find()
     .select("-password")
@@ -131,6 +132,50 @@ exports.deleteUser = (req, res) => {
                   userInfo: deleteddUser,
                 });
               }
+=======
+exports.getAllUser = (req,res) =>{
+  try{
+    User.find().select("-password").then(listOfuser =>{
+      res.status(200).send({
+        message:"users Data",
+        users:listOfuser
+      })
+ }).catch(error =>{
+    res.status(400).send({
+       message:"Opps ! something wrong",
+       subError:error
+    });
+ })
+  }catch(error){
+    res.status(400).send({
+      message:"Oops ! something went wrong in get all the users",
+      subError:error.message
+    })
+  }
+ 
+};
+
+// delete the Users
+exports.deleteUser = (req,res) =>{
+  const userId = req.query.userid
+  if(!ObjectId.isValid(userId) && !ObjectId(userId)){
+    res.status(400).send({message:"user id not valid"})
+  }else{
+
+    User.findOne({_id:userId}).then(userFound =>{
+      if(!userFound){
+         res.status(200).send({
+           message:"user not found",
+           subError:"user id is not there in records"
+         })
+       }else{
+        try{
+          User.findByIdAndDelete(userId,(error,deleteddUser)=>{
+           if(error){
+              res.status(404).json({
+              message: "user not deleted",
+              subError : error
+>>>>>>> 5485ffd552733659c7484194e8b3d52a51185632
             });
           } catch (error) {
             res.status.send({
@@ -148,3 +193,36 @@ exports.deleteUser = (req, res) => {
       });
   }
 };
+
+// get porfile
+exports.getUserById =(req,res)=>{
+  try{
+    const userId = req.query.userid
+    if(!ObjectId.isValid(userId) && !ObjectId(userId)){
+      res.status(400).send({message:"user id not valid"})
+    }
+    User.findById(userId).select("-password").then(user =>{
+      if(!user){
+        res.status(400).send({
+          message:"user not found !"
+        })
+      }else{
+        res.status(200).send({
+          message:"users Data",
+          user:user
+        })
+      }
+     
+ }).catch(error =>{
+    res.status(400).send({
+       message:"Opps ! something wrong",
+       subError:error
+    });
+ })
+  }catch(error){
+    res.status(400).send({
+      message:"Oops ! something went wrong in get the users",
+      subError:error.message
+    })
+  }
+}
