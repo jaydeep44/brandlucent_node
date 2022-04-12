@@ -2,11 +2,11 @@ const mongooes = require("mongoose");
 
 const DatabaseConn = () => {
   mongooes
-    .connect("mongodb://94.237.3.78:27017/BrandLucent", {
+    .connect(process.env.MONOGODBDEV, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-    .then((data) => console.log("connected"))
-    .catch((err) => console.log("err", err));
+    .then((data) => console.log("DB connected !"))
+    .catch((error) => console.log("error", error));
 };
 module.exports = DatabaseConn;
