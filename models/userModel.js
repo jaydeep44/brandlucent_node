@@ -9,6 +9,8 @@ var User = mongoose.Schema({
   password: { type: String, required: true },
   role: { type: Boolean, default: 0 },
   status: { type: String, default: "pending" },
+  resetToken: String,
+  expireToken: Date,
 });
 
 var user = mongoose.model("User", User);
