@@ -74,34 +74,6 @@ exports.Delete_product = async (req, res) => {
   }
 };
 
-// exports.Update_Product = (req, res) => {
-//   let imagePath = "";
-//   if (req.file) {
-//     imagePath = req.file.path;
-//   }
-//   Product.findOneAndUpdate(
-//     { _id: req.params.id },
-//     {
-//       name: req.body.name,
-//       description: req.body.description,
-//       image: imagePath,
-//       price: req.body.price,
-//       quantity: req.body.quantity,
-//       cat_id: req.body.cat_id,
-//     }
-//   )
-//     .then((result) => {
-//       res.status(200).json({
-//         updated_user: "Product Updated successfully",
-//       });
-//     })
-//     .catch((err) => {
-//       res.status(404).json({
-//         message: err,
-//       });
-//     });
-// };
-
 exports.Update_Product = (req, res) => {
   var image = req.file.path;
   const product = req.body;
