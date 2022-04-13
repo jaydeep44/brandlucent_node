@@ -33,6 +33,7 @@ exports.updateUser = (req, res) => {
     lastName: req.body.lastName,
     email: req.body.email,
     phone: req.body.phone,
+    status:req.body.status
   };
   if (Object.keys(body).length === 0 && body.constructor === Object) {
     res.status(400).send({ message: "Data Not Proper Formated..." });
