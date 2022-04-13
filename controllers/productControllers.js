@@ -44,6 +44,7 @@ exports.product_create = async (req, res) => {
 exports.Get_All_Product = async (req, res) => {
   await Product.find()
     .populate([{ path: "cat_id" }])
+
     .sort({ created_at: -1 })
 
     .then((response) => {

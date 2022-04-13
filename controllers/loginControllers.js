@@ -33,6 +33,7 @@ exports.login = (req, res, next) => {
           );
 
           res.status(200).json({
+            _id: user[0]._id,
             name: user[0].name,
             role: user[0].role,
             email: user[0].email,
@@ -95,12 +96,14 @@ exports.restPassword = (req, res) => {
   const hash = bcrypt.hashSync(newPassword, salt);
   const obj = {
     password: hash,
+    resetToken: "",
   };
   if (newPassword === confirmPassword) {
     User.findOne({ resetToken: token })
       .then((user) => {
         user = _.extend(user, obj);
         user.save();
+
         return res.status(200).json({
           message: "Password Updated successfully",
         });
