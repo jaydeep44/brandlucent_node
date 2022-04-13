@@ -62,8 +62,7 @@ exports.Get_Category = async (req, res) => {
 
 exports.updateCategory = (req, res) => {
   var image = req.file.path;
-
-  console.log(req.body, "image");
+  const category = req.body;
   Category.findOneAndUpdate(
     { _id: req.params.id },
     {
@@ -74,6 +73,7 @@ exports.updateCategory = (req, res) => {
     .then((result) => {
       res.status(200).json({
         updated_user: "Category Updated successfully",
+        category,
       });
     })
     .catch((err) => {

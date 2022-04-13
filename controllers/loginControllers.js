@@ -56,7 +56,7 @@ exports.sendMailToResetPassword = (req, res) => {
     secure: false,
     requireTLS: true,
 
-    auth: { user: "jaydeepc721@gmail.com", pass: "Asus231#" },
+    auth: { user: "example2655@gmail.com", pass: "Asus231#" },
   });
 
   crypto.randomBytes(32, (err, buffer) => {
