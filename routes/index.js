@@ -6,6 +6,7 @@ const user = require("./userRoutes");
 const category = require("./categoryRoutes");
 const product = require("./productRoutes");
 const Offers = require("./productOfferRoutes");
+const Order = require("../routes/orderRoutes");
 
 const app = express();
 app.use(express.json());
@@ -15,5 +16,6 @@ app.use("/api", user);
 app.use("/api", category);
 app.use("/api", product);
 app.use("/api", Offers);
+app.use("/api", Order);
 
 module.exports = app;

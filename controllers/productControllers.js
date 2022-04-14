@@ -40,6 +40,18 @@ exports.product_create = async (req, res) => {
       res.status(400).send({ message: err.message });
     });
 };
+exports.Get_product_by_category = async (req, res) => {
+  const id = req.params.id;
+  console.log(req.params);
+  await Product.find({ cat_id: id })
+
+    .then((response) => {
+      res.status(200).send(response);
+    })
+    .catch((err) => {
+      res.status(400).send({ message: err.message });
+    });
+};
 
 exports.Get_All_Product = async (req, res) => {
   await Product.find()

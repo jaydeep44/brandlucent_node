@@ -61,7 +61,7 @@ exports.Get_Category = async (req, res) => {
 };
 
 exports.updateCategory = (req, res) => {
-  var image = "";
+  var image;
   if (req.file) {
     image = req.file.path;
   }
