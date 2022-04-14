@@ -61,24 +61,30 @@ exports.Get_Category = async (req, res) => {
 };
 
 exports.updateCategory = (req, res) => {
-  var image = req.file.path;
-  const category = req.body;
-  Category.findOneAndUpdate(
-    { _id: req.params.id },
+  var image = "";
+  if (req.file) {
+    image = req.file.path;
+  }
+
+  Category.findByIdAndUpdate(
+    req.params.id,
     {
       name: req.body.name,
       image: image,
+    },
+    { new: true },
+    (err, categoryupdatedData) => {
+      if (err) {
+        res.status(404).json({
+          message: "please enter correct productoffer id ",
+          subErr: err.message,
+        });
+      } else {
+        res.status(200).json({
+          updated_user: "Category Updated successfully",
+          categoryupdatedData: categoryupdatedData,
+        });
+      }
     }
-  )
-    .then((result) => {
-      res.status(200).json({
-        updated_user: "Category Updated successfully",
-        category,
-      });
-    })
-    .catch((err) => {
-      res.status(404).json({
-        message: err,
-      });
-    });
+  );
 };

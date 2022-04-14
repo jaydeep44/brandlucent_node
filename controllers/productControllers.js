@@ -76,10 +76,13 @@ exports.Delete_product = async (req, res) => {
 };
 
 exports.Update_Product = (req, res) => {
-  var image = req.file.path;
-  const product = req.body;
-  Product.findOneAndUpdate(
-    { _id: req.params.id },
+  var image;
+  if (req.file) {
+    image = req.file.path;
+  }
+
+  Product.findByIdAndUpdate(
+    req.params.id,
     {
       name: req.body.name,
       description: req.body.description,
@@ -87,17 +90,20 @@ exports.Update_Product = (req, res) => {
       price: req.body.price,
       quantity: req.body.quantity,
       cat_id: req.body.cat_id,
+    },
+    { new: true },
+    (err, productupdatedData) => {
+      if (err) {
+        res.status(404).json({
+          message: "please enter correct productoffer id ",
+          subErr: err.message,
+        });
+      } else {
+        res.status(200).json({
+          updated_user: "Product Updated successfully",
+          productupdatedData: productupdatedData,
+        });
+      }
     }
-  )
-    .then((result) => {
-      res.status(200).json({
-        updated_user: "Product Updated successfully",
-        product,
-      });
-    })
-    .catch((err) => {
-      res.status(404).json({
-        message: "please enter correct product id ",
-      });
-    });
+  );
 };

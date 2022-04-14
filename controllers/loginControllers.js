@@ -80,7 +80,7 @@ exports.sendMailToResetPassword = (req, res) => {
           subject: "password reset",
           html: `
                     <p>You requested for password reset</p>
-                    <h5>click in this <a href="http://192.168.168.28/react-projects/project2/set%20pass.jpg">link</a> to reset password</h5>
+                    <h5>click in this <a href="http://brandlucent.mangoitsol.com/reset">link</a> to reset password</h5>
                     `,
         });
         res.json({ message: "check your email", token });
