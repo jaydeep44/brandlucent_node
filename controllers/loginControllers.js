@@ -33,6 +33,7 @@ exports.login = (req, res, next) => {
           );
 
           res.status(200).json({
+            _id: user[0]._id,
             name: user[0].name,
             role: user[0].role,
             email: user[0].email,
@@ -56,7 +57,7 @@ exports.sendMailToResetPassword = (req, res) => {
     secure: false,
     requireTLS: true,
 
-    auth: { user: "jaydeepc721@gmail.com", pass: "Asus231#" },
+    auth: { user: "example2655@gmail.com", pass: "Asus231#" },
   });
 
   crypto.randomBytes(32, (err, buffer) => {
@@ -79,7 +80,7 @@ exports.sendMailToResetPassword = (req, res) => {
           subject: "password reset",
           html: `
                     <p>You requested for password reset</p>
-                    <h5>click in this <a href="http://192.168.168.28/react-projects/project2/set%20pass.jpg">link</a> to reset password</h5>
+                    <h5>click in this <a href="http://brandlucent.mangoitsol.com/reset">link</a> to reset password</h5>
                     `,
         });
         res.json({ message: "check your email", token });
@@ -95,12 +96,14 @@ exports.restPassword = (req, res) => {
   const hash = bcrypt.hashSync(newPassword, salt);
   const obj = {
     password: hash,
+    resetToken: "",
   };
   if (newPassword === confirmPassword) {
     User.findOne({ resetToken: token })
       .then((user) => {
         user = _.extend(user, obj);
         user.save();
+
         return res.status(200).json({
           message: "Password Updated successfully",
         });

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-var User = mongoose.Schema({
+var Users = mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phone: { type: Number, maxLength: 9, required: true },
@@ -12,5 +12,5 @@ var User = mongoose.Schema({
   expireToken: Date,
 });
 
-var user = mongoose.model("User", User);
+var user = mongoose.models.Users || mongoose.model("User", Users);
 module.exports = user;

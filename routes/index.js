@@ -7,6 +7,9 @@ const category = require("./categoryRoutes");
 const header = require("./headerRoutes");
 const footer = require("./footerRoutes");
 const banner = require("./bannerRoutes")
+const product = require("./productRoutes");
+const Offers = require("./productOfferRoutes");
+const Order = require("../routes/orderRoutes");
 
 const app = express();
 app.use(express.json());
@@ -19,4 +22,8 @@ app.use("/api", category);
 app.use('/api', header);
 app.use('/api', footer);
 app.use('/api',banner)
+app.use("/api", product);
+app.use("/api", Offers);
+app.use("/api", Order);
+
 module.exports = app;
