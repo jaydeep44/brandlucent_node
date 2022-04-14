@@ -184,3 +184,7 @@ exports.getUserById = (req, res) => {
     });
   }
 };
+
+exports.working=(req,res)=>{
+  res.send("working");
+}

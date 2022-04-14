@@ -8,6 +8,7 @@ const isverify = require("../middleware/checkAuth")
 const router = express.Router();
 const userController = require("../controllers/userController");
 
+router.route("/").get(userController.working)
 router.route("/login").post(login);
 router.route("/createUser").post(userController.CreateUser);
 router.route("/updateUser").post(isverify,userController.updateUser);
