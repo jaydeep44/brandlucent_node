@@ -6,6 +6,9 @@ const siteManagementController = require("../controllers/siteManagementControlle
 
 router.route("/createBanner").post( isverify,upload.fields([ { name: 'banner', 
 maxCount: 1 },{ name: 'logo', maxCount: 1 }]),siteManagementController.createBanner );
+router.route("/updateBanner").put( isverify,upload.fields([ { name: 'banner', 
+maxCount: 1 },{ name: 'logo', maxCount: 1 }]),siteManagementController.updateBanner );
 router.route("/getBanner").get(isverify,siteManagementController.getBanner);
+router.route("/deleteBanner").delete(isverify,siteManagementController.deleteBanner);
 
 module.exports = router;

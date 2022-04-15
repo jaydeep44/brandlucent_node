@@ -1,6 +1,7 @@
 const Header = require('../models/headerModel')
 const Footer = require('../models/footerModel')
 const Banner = require("../models/bannerModel")
+ const NewsLetter = require("../models/newsLetterModel")
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -182,6 +183,7 @@ exports.createFooter = (req,res)=>{
 exports.getFooter = (req,res)=>{
     try{
         const footerValue = req.query.footerkey
+      
         if(!footerValue){
             Footer.find().then(footerData =>{
                 if(!footerData.length > 0){
@@ -301,6 +303,7 @@ exports.updateFooter = (req,res)=>{
     }
 }
 
+// Banner api 
 exports.createBanner = async (req,res)=>{
     try{
         let imagePath = "";
@@ -339,12 +342,24 @@ exports.createBanner = async (req,res)=>{
 exports.getBanner = async(req,res)=>{
     try{
         const bannerid =req.query.bannerid;
+        if (!ObjectId.isValid(bannerid) && !ObjectId(bannerid)) {
+            res.status(400).send({ message: "footer id not valid" });
+          }
         if(!bannerid){
             Banner.find().then(bannerData=>{
-                res.status(200).send({
-                    message:"banner Data",
-                    bannerData:bannerData
-                })
+                console.log(bannerData.length)
+                if(bannerData.length === 0 ){
+                    res.status(400).send({
+                        message:"banner data not found ",
+                        subError : bannerData
+                    })
+                }else{
+                    res.status(200).send({
+                        message:"banner  Data",
+                        bannerData:bannerData
+                    })
+                }
+              
              }).catch(error =>{
                 res.status(400).send({
                     message:"Oops ! something went wrong",
@@ -352,11 +367,18 @@ exports.getBanner = async(req,res)=>{
                 })
              })
         }else{
-            Banner.find({_id:bannerid}).then(bannerData=>{
-                res.status(200).send({
-                    message:"banner Data",
-                    bannerData:bannerData
-                })
+            Banner.findById({_id:bannerid}).then(bannerData=>{
+                if(!bannerData){
+                    res.status(400).send({
+                        message:" banner alredy deleted ",
+                        subError : bannerData
+                    })
+                }else{
+                    res.status(200).send({
+                        message:"banner Data",
+                        bannerData:bannerData
+                    })
+                }
              }).catch(error =>{
                 res.status(400).send({
                     message:"Oops ! something went wrong",
@@ -369,6 +391,292 @@ exports.getBanner = async(req,res)=>{
         res.status(400).send({
             message:"Oops ! something went wrong",
             subError: error.message
+        })
+    }
+}
+
+exports.updateBanner = async(req,res)=>{
+    try{
+        const body = req.body
+        var bannerUpdateData = {
+            banner: "",
+            logo: "",
+            title: "",
+            description: "",
+        }
+        if (!ObjectId.isValid(body._id) && !ObjectId(body._id)) {
+            res.status(400).send({ message: "banner id not valid" });
+          }else{
+             await Banner.findById(body._id).then(bannerInfo=>{
+                  if(!bannerInfo){
+                      res.status(400).send({
+                          message:"banner data not found",
+                          bannerData:bannerInfo
+                      })
+                  }else{
+                    for(key in bannerUpdateData){
+                        bannerUpdateData[key]  = bannerInfo[key]
+                    } 
+                    bannerUpdateData.title  = body.title || bannerInfo.title
+                    bannerUpdateData.description  = body.description  || bannerInfo.description
+                  }
+
+                 
+              }).catch(error=>{
+                  res.status(400).send({
+                      message:"banner not found",
+                      subError:error.message
+                  })
+              })
+          }
+        if (req.files) {
+            for(key in req.files){
+                bannerUpdateData[key]  = req.files[key][0].path
+            }     
+        }
+        
+        if (Object.keys(body).length === 0 && body.constructor === Object) {
+            res.status(400).send({ message: "body will not empty" });
+          } 
+        else{
+            Banner.findByIdAndUpdate({ _id: body._id },bannerUpdateData,{ new: true },(error,updatedData)=>{
+               
+                if(error){
+                    res.status(400).send({
+                        message:"banner not found",
+                        subError:error.message
+                    })
+                }else{
+                    res.status(200).send({
+                        message:"banner updated Data",
+                        bannerData:updatedData
+                    })
+                }
+            });
+          }
+    }catch(error){
+        res.status(400).send({
+            message:"Oops ! something went wrong in update banner",
+            error:error,
+            subError:error.message
+        })
+    }
+}
+exports.deleteBanner = async(req,res)=>{
+    try{
+        const bannerId = req.query.bannerid;
+        if(!bannerId){
+            res.status(400).send({ message: "banner id required" });
+        }
+        if (!ObjectId.isValid(bannerId) && !ObjectId(bannerId)) {
+            res.status(400).send({ message: "banner id not valid" });
+          }else{
+            Banner.findByIdAndDelete(bannerId,(error,deletedData)=>{
+                if(error){
+                    res.status(400).send({
+                        message:"banner data not found",
+                        subError:error.message
+                    })
+                }else{
+                    res.status(200).send({
+                        message:"banner deleted Data",
+                        footerData:deletedData
+                    })
+                }
+            });
+          }
+    }catch(error){
+        res.status(400).send({
+            message:"Oops ! something went wrong in delete banner",
+            error :error,
+            subError:error.message
+        })
+    }
+}
+
+
+// CURD news letter api
+exports.createNewsLetter = async(req,res)=>{
+    try{
+        let imagePath = "";
+        if (req.file) {
+          imagePath = req.file.path;
+        }
+        const newsLetter = new NewsLetter({
+          title: req.body.title,
+          backgroundImage: imagePath,
+          description : req.body.description
+        });
+      
+        await newsLetter.save().then((letterInfo) => {
+            if(!letterInfo){
+                res.status(400).send({
+                    message:"news latter not created !",
+                    data : letterInfo
+                })
+            }else{
+                res.status(200).send({
+                    message:"news latter created successfully !",
+                    data : letterInfo
+                });
+            }
+           
+          })
+          .catch((err) => {
+            res.status(400).send({
+                 message: "news latter not created !",
+                 subError : err.message 
+                });
+          });
+    }catch(error){
+        res.status(400).send({
+            message:"Oops ! something went wrong",
+            subError : error.message
+        })
+    }
+
+}
+exports.updateNewsLetter = async(req,res)=>{
+  try{
+    const body = req.body;
+    var updateData = {
+        title:body.title,
+        description:body.description,
+       
+    }
+    
+      if(req.file){
+        updateData.backgroundImage = req.file.path
+      }
+  
+      if (!ObjectId.isValid(body._id) && !ObjectId(body._id)) {
+        res.status(400).send({ message: "banner id not valid" });
+      }else{
+             NewsLetter.findByIdAndUpdate(body._id,updateData,{new:true},(error,updatedData)=>{
+                if(error){
+                    res.status(400).send({
+                        message:"no data found in newslatter for this id",
+                        subError:error.message
+                    })
+                }else{
+                    res.status(200).send({
+                        message:"data found",
+                        data:updatedData
+                    })
+                }
+            })
+      }
+
+
+      if (Object.keys(body).length === 0 && body.constructor === Object) {
+        res.status(400).send({ message: "body will not empty" });
+      }
+  }catch(error){
+      res.status(400).send({
+          message:"Oops ! something went wrong ",
+          subError : error.message
+      })
+  }
+  
+}
+
+exports.deleteNewsLetter = async(req,res)=>{
+    try{
+        const newsletterid = req.query.newsletterid;
+        if(!newsletterid){
+            res.status(400).send({ message: "news letter id required" });
+        }
+        if (!ObjectId.isValid(newsletterid) && !ObjectId(newsletterid)) {
+            res.status(400).send({ message: "news letter id not valid" });
+          }else{
+            NewsLetter.findByIdAndDelete(newsletterid,(error,deletedData)=>{
+                if(error){
+                    res.status(400).send({
+                        message:"news letter data not found",
+                        subError:error.message
+                    })
+                }else{
+                    if(!deletedData){
+                        res.status(200).send({
+                            message:"already deleted !"
+                        });
+                    }else{
+                        res.status(200).send({
+                            message:"news letter deleted Data",
+                            deletedData:deletedData
+                        });
+                    }
+                    
+                }
+            });
+          }
+    }catch(error){
+        res.status(400).send({
+            message:"Oops ! something went wrong in delete news latter",
+            error :error,
+            subError:error.message
+        })
+    }
+}
+
+exports.getNewsLetter = async(req,res)=>{
+    try{
+        const newsletterid = req.query.newsletterid;
+      
+        if (!ObjectId.isValid(newsletterid) && !ObjectId(newsletterid)) {
+            res.status(400).send({ message: "news letter id not valid" });
+          }
+          if(!newsletterid){
+            NewsLetter.find().then(NewsLetterData=>{
+                if(NewsLetterData.length === 0){
+                    res.status(400).send({
+                        message:"no records found ",
+                        NewsLetterData:NewsLetterData
+                    })
+                }else{
+                    res.status(200).send({
+                        message:"news letter data ",
+                        NewsLetterData:NewsLetterData
+                    })
+                }
+             
+            }).catch(error=>{
+                res.status(400).send({
+                    message:"news letter data not found",
+                    subError:error
+                })
+            });
+          }
+        else{
+            NewsLetter.findById(newsletterid,(error,NewsLetterData)=>{
+                if(error){
+                    res.status(400).send({
+                        message:"news letter data not found",
+                        subError:error.message
+                    })
+                }else{
+                    if(!NewsLetterData){
+                        res.status(200).send({
+                            message:"No records found for this id",
+                            NewsLetterData:NewsLetterData
+                        })
+                    }else{
+                        res.status(200).send({
+                            message:"news letter  Data",
+                            NewsLetterData:NewsLetterData
+                        });
+                    }
+               
+                }
+            });
+
+   
+          }
+    }catch(error){
+        res.status(400).send({
+            message:"Oops ! something went wrong in get news letter",
+            error :error,
+            subError:error.message
         })
     }
 }
