@@ -5,24 +5,32 @@ const ObjectId = mongoose.Types.ObjectId;
 
 exports.CreateUser = (req, res) => {
   const body = req.body;
-  // if (Object.keys(body).length === 0 && body.constructor === Object) {
-  //   res.status(400).send({ message: "Data Not Proper Formated..." });
-  // }
+  if (Object.keys(body).length === 0 && body.constructor === Object) {
+    res.status(400).send({ message: "Data Not Proper Formated..." });
+  }
   const newUser = new User(body);
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(newUser.password, salt);
   newUser.password = hash;
-  newUser
-    .save()
-    .then((result) => {
-      res.status(200).send(result);
-    })
-    .catch((err) => {
+  User.find({ email: req.body.email }).then((data) => {
+    if (!data.length <= 0) {
       res.status(400).send({
         message: "please Insert Unique Data",
-        SubError: err.message,
       });
-    });
+    } else {
+      newUser
+        .save()
+        .then((result) => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(400).send({
+            message: "please Insert Unique Data",
+            SubError: err.message,
+          });
+        });
+    }
+  });
 };
 
 //update the user ( by user itself)
@@ -33,7 +41,7 @@ exports.updateUser = (req, res) => {
     lastName: req.body.lastName,
     email: req.body.email,
     phone: req.body.phone,
-    status:req.body.status
+    status: req.body.status,
   };
   if (Object.keys(body).length === 0 && body.constructor === Object) {
     res.status(400).send({ message: "Data Not Proper Formated..." });
@@ -185,6 +193,6 @@ exports.getUserById = (req, res) => {
   }
 };
 
-exports.working=(req,res)=>{
+exports.working = (req, res) => {
   res.send("working");
-}
+};
