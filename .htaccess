@@ -1,2 +1,5 @@
+<IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteRule (.*)$ http://94.237.3.78:4001/api [P,L]
+RewriteRule (.*)$ http://%{SERVER_ADDR}:4001%{REQUEST_URI} [P,L]
+
+</IfModule>

@@ -37,8 +37,7 @@ exports.CreateUser = (req, res) => {
 exports.updateUser = (req, res) => {
   const body = req.body;
   const updateUserData = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
+    firstName: req.body.name,
     email: req.body.email,
     phone: req.body.phone,
     status: req.body.status,
@@ -120,7 +119,6 @@ exports.deleteUser = (req, res) => {
   } else {
     User.findOne({ _id: userId })
       .then((userFound) => {
-        console.log(userFound);
         if (!userFound) {
           res.status(200).send({
             message: "user not found",
