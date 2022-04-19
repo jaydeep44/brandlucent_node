@@ -17,6 +17,7 @@ const products = mongoose.Schema({
     ref: "productOffer",
     required: false,
   },
+  visitedNumberOfTime :{type:Number}
 });
 
 var product = mongoose.models.products || mongoose.model("product", products);

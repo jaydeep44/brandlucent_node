@@ -5,6 +5,7 @@ const {
   Delete_product,
   Update_Product,
   Get_product_by_category,
+  visitedProductNumberOfTime
 } = require("../controllers/productControllers");
 const { product_create } = require("../controllers/productControllers");
 
@@ -18,4 +19,6 @@ router
   .route("/getProductBycategory/:id")
   .get(upload.none(), Get_product_by_category);
 
+router.route("/addvisit").post(visitedProductNumberOfTime);
 module.exports = router;
+

@@ -4,32 +4,46 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 exports.CreateUser = (req, res) => {
-  const body = req.body;
-  // if (Object.keys(body).length === 0 && body.constructor === Object) {
-  //   res.status(400).send({ message: "Data Not Proper Formated..." });
-  // }
-  const newUser = new User(body);
-  const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync(newUser.password, salt);
-  newUser.password = hash;
-  newUser
-    .save()
-    .then((result) => {
-      res.status(200).send(result);
-    })
-    .catch((err) => {
-      res.status(400).send({
-        message: "please Insert Unique Data",
-        SubError: err.message,
+  try{
+    const body = req.body;
+    if (Object.keys(body).length === 0 && body.constructor === Object) {
+      res.status(400).send({ message: "body will not empty" });
+    }
+    const newUser = new User(body);
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(newUser.password, salt);
+    newUser.password = hash;
+    newUser.save().then((result) => {
+      if(!result){
+        res.status(400).send({
+          message:"user not created",
+          userdata:result
+        });
+      }else{
+        res.status(200).send({
+          message:"user created succesfully",
+          userdata:result
+        });
+      }
+        
+      })
+      .catch((err) => {
+        res.status(400).send({
+          message: "please Insert Unique Data",
+          SubError: err.message,
+        });
       });
-    });
+  }catch(error){
+
+  }
+  
 };
 
 //update the user ( by user itself)
 exports.updateUser = (req, res) => {
   const body = req.body;
   const updateUserData = {
-    firstName: req.body.name,
+    name: req.body.name,
     email: req.body.email,
     phone: req.body.phone,
     status:req.body.status
@@ -41,8 +55,7 @@ exports.updateUser = (req, res) => {
   if (!ObjectId.isValid(body._id) && !ObjectId(body._id)) {
     res.status(400).send({ message: "user id not valid" });
   } else {
-    User.findOne({ _id: body._id })
-      .then((userFound) => {
+    User.findOne({ _id: body._id }).then((userFound) => {
         if (!userFound) {
           res.status(200).send({
             message: "user not found",
@@ -50,11 +63,7 @@ exports.updateUser = (req, res) => {
           });
         } else {
           try {
-            User.findByIdAndUpdate(
-              { _id: body._id },
-              updateUserData,
-              { new: true },
-              (error, updatedUser) => {
+            User.findByIdAndUpdate({ _id: body._id },updateUserData,{ new: true },(error, updatedUser) => {
                 if (error) {
                   res.status(404).json({
                     message: "user not updated",

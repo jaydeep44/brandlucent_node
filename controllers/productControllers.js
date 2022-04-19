@@ -1,7 +1,9 @@
 const Product = require("../models/productModel");
 const multer = require("multer");
 const { mongoose } = require("mongoose");
+const product = require("../models/productModel");
 
+const ObjectId = mongoose.Types.ObjectId;
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, `./uploads/`);
@@ -30,6 +32,7 @@ exports.product_create = async (req, res) => {
     price: req.body.price,
     quantity: req.body.quantity,
     cat_id: req.body.cat_id,
+    visitedNumberOfTime: 0
   });
   await catsave
     .save()
@@ -119,3 +122,70 @@ exports.Update_Product = (req, res) => {
     }
   );
 };
+
+exports.visitedProductNumberOfTime = async (req,res)=>{
+  try{
+    const productid = req.query.productid ;
+    var count = 0
+    var updateData ={
+      visitedNumberOfTime : ""
+    };
+    if (!ObjectId.isValid(productid) && !ObjectId(productid)) {
+      res.status(400).send({ message: "productid id not valid" });
+    }
+    if(!productid){
+      res.status(400).send({
+        message:"product id is required "
+      })
+    }else{
+      await product.findById(productid).then(preData=>{
+       if(!preData){
+        res.status(200).send({
+          message:"product is not there "
+       })
+       }else{
+         count = preData.visitedNumberOfTime;
+          updateData.visitedNumberOfTime = count + 1
+             Product.findByIdAndUpdate(productid,updateData,{new:true},(error , updatedData)=>{
+            if(error){
+              res.status(400).send({
+                message:"not visited",
+                subError:error.message
+              })
+            }else{
+              if(!updatedData){
+                res.status(200).send({
+                   message:"product is not there for visit"
+                })
+              }else{
+                res.status(200).send({
+                  message:"product is not there for visit",
+                  data:updatedData
+               })
+              }
+            }
+          
+        })
+
+       }
+      }).catch(error=>{
+        res.status(400).send({
+          message:"no previous data found",
+          subError:error.message
+        })
+      })
+
+ 
+    }
+ 
+  }catch(error){
+    res.status(400).send({
+      message:"Oops! something went wrong in visit",
+      subError : error.message
+    })
+  }
+  
+
+}
+
+
