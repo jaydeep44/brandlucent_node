@@ -8,7 +8,6 @@ const {
 } = require("../controllers/offersController");
 
 const router = express.Router();
-
 router
   .route("/createProductOffer")
   .post(upload.single("image"), product_offer_create);

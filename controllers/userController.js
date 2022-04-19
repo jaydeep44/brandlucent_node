@@ -4,39 +4,33 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 exports.CreateUser = (req, res) => {
-  try{
-    const body = req.body;
-    if (Object.keys(body).length === 0 && body.constructor === Object) {
-      res.status(400).send({ message: "body will not empty" });
-    }
-    const newUser = new User(body);
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(newUser.password, salt);
-    newUser.password = hash;
-    newUser.save().then((result) => {
-      if(!result){
-        res.status(400).send({
-          message:"user not created",
-          userdata:result
-        });
-      }else{
-        res.status(200).send({
-          message:"user created succesfully",
-          userdata:result
-        });
-      }
-        
-      })
-      .catch((err) => {
-        res.status(400).send({
-          message: "please Insert Unique Data",
-          SubError: err.message,
-        });
-      });
-  }catch(error){
-
+  const body = req.body;
+  if (Object.keys(body).length === 0 && body.constructor === Object) {
+    res.status(400).send({ message: "Data Not Proper Formated..." });
   }
-  
+  const newUser = new User(body);
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(newUser.password, salt);
+  newUser.password = hash;
+  User.find({ email: req.body.email }).then((data) => {
+    if (!data.length <= 0) {
+      res.status(400).send({
+        message: "please Insert Unique Data",
+      });
+    } else {
+      newUser
+        .save()
+        .then((result) => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(400).send({
+            message: "please Insert Unique Data",
+            SubError: err.message,
+          });
+        });
+    }
+  });
 };
 
 //update the user ( by user itself)
@@ -46,7 +40,7 @@ exports.updateUser = (req, res) => {
     name: req.body.name,
     email: req.body.email,
     phone: req.body.phone,
-    status:req.body.status
+    status: req.body.status,
   };
   if (Object.keys(body).length === 0 && body.constructor === Object) {
     res.status(400).send({ message: "Data Not Proper Formated..." });
@@ -192,6 +186,6 @@ exports.getUserById = (req, res) => {
   }
 };
 
-exports.working=(req,res)=>{
+exports.working = (req, res) => {
   res.send("working");
-}
+};
