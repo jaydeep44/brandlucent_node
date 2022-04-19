@@ -1,18 +1,55 @@
 const Order = require("../models/ordersModel");
+const Product = require("../models/productModel");
+const User = require("../models/userModel");
 
 exports.saveOrder = async (req, res) => {
-  const orderSave = new Order({
-    productId: req.body.productId,
-    userId: req.body.userId,
-  });
-  await orderSave
-    .save()
-    .then((response) => {
-      res.status(200).send(response);
-    })
-    .catch((err) => {
-      res.status(400).send({ message: err.message });
-    });
+  const quanty = [];
+
+  const datas = await User.find({ _id: req.body.userId });
+  const product = await Product.find({ _id: req.body.productId });
+  const quantity = await Product.find({ _id: req.body.productId }).then(
+    (data) => {
+      if (data.length) {
+        quanty.push(data[0].quantity);
+      }
+      if (data.length && data[0].quantity < req.body.quantity) {
+        res.status(400).send({ message: "Quantity is not available" });
+      } else if (datas.length === 0) {
+        res.status(400).send({ message: "userId was not found" });
+      } else if (product.length === 0) {
+        res.status(400).send({ message: "product was not found" });
+      } else {
+        const orderSave = new Order({
+          productId: req.body.productId,
+          userId: req.body.userId,
+          quantity: req.body.quantity,
+        });
+        orderSave
+          .save()
+          .then((response) => {
+            res.status(200).send(response);
+            const quant = parseInt(quanty[0] - req.body.quantity);
+
+            Product.findByIdAndUpdate(
+              req.body.productId,
+              {
+                quantity: quant,
+              },
+              { new: true },
+              (err, productupdatedData) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                }
+              }
+            );
+          })
+          .catch((err) => {
+            res.status(400).send({ message: err.message });
+          });
+      }
+    }
+  );
 };
 
 exports.getUserOrder = async (req, res) => {
