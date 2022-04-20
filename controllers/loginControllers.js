@@ -14,6 +14,7 @@ exports.login = (req, res, next) => {
           message: "user name not found",
         });
       }
+
       bcrypt.compare(req.body.password, user[0].password, (err, result) => {
         if (!result) {
           return res.status(400).json({
