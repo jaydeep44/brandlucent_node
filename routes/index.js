@@ -9,8 +9,8 @@ const footer = require("./footerRoutes");
 const banner = require("./bannerRoutes")
 const product = require("./productRoutes");
 const Offers = require("./productOfferRoutes");
-const Order = require("../routes/orderRoutes");
-const newsLetter = require("../routes/newsLetterRoutes");
+const Order = require("./orderRoutes");
+const newsLetter = require("./newsLetterRoutes");
 
 const app = express();
 app.use(express.json());
@@ -22,7 +22,7 @@ app.use("/api", user);
 app.use("/api", category);
 app.use('/api', header);
 app.use('/api', footer);
-app.use('/api',banner)
+app.use('/api', banner)
 app.use("/api", product);
 app.use("/api", Offers);
 app.use("/api", Order);

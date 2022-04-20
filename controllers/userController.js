@@ -37,7 +37,7 @@ exports.CreateUser = (req, res) => {
 exports.updateUser = (req, res) => {
   const body = req.body;
   const updateUserData = {
-    firstName: req.body.name,
+    name: req.body.name,
     email: req.body.email,
     phone: req.body.phone,
     status: req.body.status,
@@ -49,8 +49,7 @@ exports.updateUser = (req, res) => {
   if (!ObjectId.isValid(body._id) && !ObjectId(body._id)) {
     res.status(400).send({ message: "user id not valid" });
   } else {
-    User.findOne({ _id: body._id })
-      .then((userFound) => {
+    User.findOne({ _id: body._id }).then((userFound) => {
         if (!userFound) {
           res.status(200).send({
             message: "user not found",
@@ -58,11 +57,7 @@ exports.updateUser = (req, res) => {
           });
         } else {
           try {
-            User.findByIdAndUpdate(
-              { _id: body._id },
-              updateUserData,
-              { new: true },
-              (error, updatedUser) => {
+            User.findByIdAndUpdate({ _id: body._id },updateUserData,{ new: true },(error, updatedUser) => {
                 if (error) {
                   res.status(404).json({
                     message: "user not updated",

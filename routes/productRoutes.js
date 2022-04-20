@@ -5,6 +5,7 @@ const {
   Delete_product,
   Update_Product,
   Get_product_by_category,
+  visitedProductNumberOfTime
 } = require("../controllers/productControllers");
 const isverify = require("../middleware/checkAuth");
 
@@ -24,4 +25,6 @@ router
   .route("/getProductBycategory/:id")
   .get(isverify, upload.none(), Get_product_by_category);
 
+router.route("/addvisit").post(visitedProductNumberOfTime);
 module.exports = router;
+
