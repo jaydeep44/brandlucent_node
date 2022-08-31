@@ -5,7 +5,7 @@ const {
   Delete_product,
   Update_Product,
   Get_product_by_category,
-  visitedProductNumberOfTime
+  visitedProductNumberOfTime,
 } = require("../controllers/productControllers");
 const isverify = require("../middleware/checkAuth");
 
@@ -27,4 +27,3 @@ router
 
 router.route("/addvisit").post(visitedProductNumberOfTime);
 module.exports = router;
-
